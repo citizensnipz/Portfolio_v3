@@ -99,7 +99,7 @@ export function initializeThemePicker(): () => void {
   hex.addEventListener("input", () => hex.setCustomValidity(""), options);
   hex.addEventListener("change", () => {
     if (normalizeHex(hex.value)) commit(hex.value);
-    else { hex.setCustomValidity("Enter a hex color, such as #C4D5A5."); hex.reportValidity(); }
+    else { hex.setCustomValidity("Enter a hex color, such as #FF9B58."); hex.reportValidity(); }
   }, options);
   panel.querySelector("#theme-reset")!.addEventListener("click", () => {
     commit(DEFAULT_THEME, false, false);

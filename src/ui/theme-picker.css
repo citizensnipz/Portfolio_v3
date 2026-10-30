@@ -2,7 +2,7 @@
 .footer-actions { display: flex; align-items: center; gap: 20px; position: relative; margin-left: auto; }
 .theme-toggle, .theme-panel button { border: 0; background: none; }
 .theme-toggle { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; color: var(--muted); }
-.theme-swatch { width: 16px; height: 16px; border-radius: 50%; background: var(--theme-seed, #c4d5a5); border: 1px solid var(--accent); }
+.theme-swatch { width: 16px; height: 16px; border-radius: 50%; background: var(--theme-seed, #ff9b58); border: 1px solid var(--accent); }
 .theme-panel { position: absolute; z-index: 30; top: calc(100% + 24px); right: 0; width: 280px; max-width: calc(100vw - 48px); max-height: calc(100dvh - 120px); overflow: auto; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: rgb(var(--background-rgb)); color: rgb(var(--text-rgb)); box-shadow: 0 14px 60px #0008; font-size: 12px; letter-spacing: normal; }
 .theme-panel-heading, .theme-panel-bottom { display: flex; align-items: center; gap: 10px; }
 .theme-panel-heading { justify-content: space-between; }

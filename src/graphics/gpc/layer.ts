@@ -1,4 +1,4 @@
-import { Group } from "three";
+import { Box3, Group, Matrix4, Ray, Vector3 } from "three";
 import {
   PackedSplats,
   SparkRenderer,
@@ -51,6 +51,13 @@ export class GpcSceneLayer implements SceneLayer {
   private masks?: ReturnType<typeof createSpatialMasks>;
   private canvas?: HTMLCanvasElement;
   private unsubscribeTheme?: () => void;
+  private readonly pickRay = new Ray();
+  private readonly pickInverse = new Matrix4();
+  private readonly pickPoint = new Vector3();
+  private readonly statueBounds = new Box3(
+    new Vector3(STATUE_MASK.base[0] - STATUE_MASK.radius, STATUE_MASK.base[1] - STATUE_MASK.height, STATUE_MASK.base[2] - STATUE_MASK.radius),
+    new Vector3(STATUE_MASK.base[0] + STATUE_MASK.radius, STATUE_MASK.base[1], STATUE_MASK.base[2] + STATUE_MASK.radius),
+  );
   private readonly reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   constructor(
@@ -168,9 +175,18 @@ export class GpcSceneLayer implements SceneLayer {
         (point[1] + manifest.center[1]) * scale,
         (point[2] - manifest.center[2]) * scale,
       ];
+      // Use the same source-space statue axis as the dissolve/picking cylinder.
+      // Camera metadata has a different coordinate convention, so transform the
+      // pivot through the mesh itself instead of treating it as a camera target.
+      this.mesh.updateWorldMatrix(true, false);
+      const pivot = this.mesh.localToWorld(new Vector3(
+        STATUE_MASK.base[0],
+        STATUE_MASK.base[1] + STATUE_MASK.upSign * STATUE_MASK.height * 0.5,
+        STATUE_MASK.base[2],
+      ));
       context.configureCamera({
         position: transform(manifest.camera.position),
-        target: transform(manifest.camera.target),
+        target: [pivot.x, pivot.y, pivot.z],
         fov: manifest.camera.fov,
       });
     }
@@ -180,6 +196,25 @@ export class GpcSceneLayer implements SceneLayer {
     this.progress(
       `Statue ready · ${manifest.count.toLocaleString()} Gaussians`,
     );
+  }
+
+  beforeRender(context: GraphicsContext): void {
+    if (!this.masks || !this.mesh || !this.frame) return;
+    const dissolving = [this.frame.upperEnvironment, this.frame.circleRadius, this.frame.cylinderLength]
+      .some(remaining => remaining > 0 && remaining < 1);
+    const seconds = context.animationSeconds ?? 0;
+    if (dissolving && this.masks.motion.value > 0 && this.masks.time.value !== seconds) {
+      this.masks.time.value = seconds;
+      this.mesh.needsUpdate = true;
+    }
+  }
+
+  hitTest(ray: Ray): boolean {
+    if (!this.mesh || !this.frame || this.frame.cylinderLength <= 0 || this.disposed) return false;
+    this.mesh.updateWorldMatrix(true, false);
+    this.pickInverse.copy(this.mesh.matrixWorld).invert();
+    this.pickRay.copy(ray).applyMatrix4(this.pickInverse);
+    return this.pickRay.intersectBox(this.statueBounds, this.pickPoint) !== null;
   }
 
   private createRenderer(context: GraphicsContext): void {

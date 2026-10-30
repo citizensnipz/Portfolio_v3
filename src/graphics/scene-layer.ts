@@ -1,4 +1,4 @@
-import type { Camera, Scene, WebGLRenderer } from "three";
+import type { Camera, Ray, Scene, WebGLRenderer } from "three";
 import type { TimelineFrame } from "./timeline";
 
 export interface Viewport {
@@ -14,6 +14,8 @@ export interface CameraPose {
 }
 
 export interface GraphicsContext {
+  /** Shared animation clock; frozen by pause and disabled for reduced motion. */
+  animationSeconds?: number;
   renderer: WebGLRenderer;
   scene: Scene;
   camera: Camera;
@@ -30,6 +32,8 @@ export interface GraphicsContext {
  * No file format, decoder, sorting strategy, or proprietary API is specified.
  */
 export interface SceneLayer {
+  /** Optional lightweight picking proxy, independent of the rendered splat count. */
+  hitTest?(ray: Ray): boolean;
   initialize(context: GraphicsContext): void | Promise<void>;
   update(frame: Readonly<TimelineFrame>): void;
   resize(viewport: Readonly<Viewport>): void;

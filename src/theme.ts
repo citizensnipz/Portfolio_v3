@@ -1,10 +1,12 @@
 export type RGB = [number, number, number];
-export const DEFAULT_THEME = "#c4d5a5";
+export const DEFAULT_THEME = "#ff9b58";
+// The authored palette and illustrations use this green as their reference hue.
+const PALETTE_REFERENCE = "#c4d5a5";
 export const THEME_STORAGE_KEY = "portfolio-theme-v1";
 
 export const BASE_TONES = {
   background: "#111411", text: "#eceee6", muted: "#a2a99e",
-  accent: DEFAULT_THEME, line: "#cad7ba", underline: "#80916a",
+  accent: PALETTE_REFERENCE, line: "#cad7ba", underline: "#80916a",
   glow: "#293326", decor: "#a7bd80", mesh: "#b9cc91",
   border: "#859178", soft: "#c1caba", dim: "#8b9883",
   label: "#c4cbbb", note: "#969f8f", chip: "#c4ccbc",
@@ -42,11 +44,11 @@ export function hsvToRgb([h, s, v]: RGB): RGB {
   return [f(5), f(3), f(1)];
 }
 
-const defaultHsv = rgbToHsv(hexToRgb(DEFAULT_THEME));
+const defaultHsv = rgbToHsv(hexToRgb(PALETTE_REFERENCE));
 
 /** Preserve each authored tone's brightness and variation, rotating the palette together. */
 export function tintColor(base: string, seed: string): RGB {
-  if (seed === DEFAULT_THEME) return hexToRgb(base);
+  if (seed === PALETTE_REFERENCE) return hexToRgb(base);
   const [h, s, v] = rgbToHsv(hexToRgb(base));
   const [seedH, seedS] = rgbToHsv(hexToRgb(seed));
   return hsvToRgb([(h + seedH - defaultHsv[0] + 360) % 360, Math.min(1, s * seedS / defaultHsv[1]), v]);

@@ -22,6 +22,7 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
   const circle = dyno.dynoFloat(1);
   const cylinder = dyno.dynoFloat(1);
   const motion = dyno.dynoFloat(1);
+  const time = dyno.dynoFloat(0);
   const accent = dyno.dynoVec3(new Vector3(196 / 255, 213 / 255, 165 / 255));
   const base = dyno.dynoVec3(new Vector3(...STATUE_MASK.base));
   const radius = dyno.dynoFloat(STATUE_MASK.radius);
@@ -35,6 +36,7 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
       circle: "float",
       cylinder: "float",
       motion: "float",
+      time: "float",
       accent: "vec3",
       base: "vec3",
       radius: "float",
@@ -43,7 +45,7 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
       ceiling: "float",
     },
     outTypes: { gsplat: dyno.Gsplat },
-    inputs: { upper, circle, cylinder, motion, accent, base, radius, height, extent, ceiling },
+    inputs: { upper, circle, cylinder, motion, time, accent, base, radius, height, extent, ceiling },
     globals: () => [
       // Integer hashing keeps the variation stable across seeks and across frames.
       `float portfolioMaskHash(uint x) {
@@ -90,6 +92,13 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
       "vec3 drift = vec3(outward.x * 0.55 + cos(angle) * 0.32, -1.1 - random.y * 0.6, outward.y * 0.55 + sin(angle) * 0.32);",
       `float travel = life * life * ${i.motion} * (statue ? 0.85 : 1.25);`,
       `${o.gsplat}.center += drift * travel;`,
+      // Smooth, time-varying turbulence only on splats currently dissolving.
+      // Original positions still determine mask membership; intact splats stay fixed.
+      `vec3 noisePhase = relative * 1.7 + random * 6.2831853;`,
+      `vec3 turbulence = sin(noisePhase.yzx + ${i.time} * vec3(1.15, 1.43, 1.27))
+        + 0.45 * sin(noisePhase.zxy * 1.9 - ${i.time} * vec3(1.91, 1.57, 1.73));`,
+      `float noiseEnvelope = smoothstep(0.0, 0.2, life) * (1.0 - smoothstep(0.7, 1.0, life));`,
+      `${o.gsplat}.center += turbulence * noiseEnvelope * ${i.motion} * (statue ? 0.12 : 0.18);`,
       `float shimmer = sin(life * 3.14159265) * ${i.motion} * 0.7;`,
       `${o.gsplat}.rgba.rgb = mix(${i.gsplat}.rgba.rgb, ${i.accent}, shimmer);`,
       // A sparse population remains as dust after the initial breakup, avoiding a fog bank.
@@ -100,5 +109,5 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
       `${o.gsplat}.rgba.a *= visibility;`,
     ],
   });
-  return { modifier, upper, circle, cylinder, motion, accent };
+  return { modifier, upper, circle, cylinder, motion, time, accent };
 }

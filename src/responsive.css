@@ -1,9 +1,27 @@
 /* Desktop: project cards occupy the left half; the statue stays on the right.
    The existing full-width mobile project layout is intentionally unchanged. */
 @media (min-width: 701px) {
+  .about,
+  .projects {
+    /* Share the hero's fixed, left-to-right graphics overlay without a second tint. */
+    background: transparent;
+  }
+  .about > .section-heading,
+  .about > .about-grid {
+    width: 48%;
+  }
+  .about .section-heading .small-label {
+    display: none;
+  }
+  .about > .about-grid {
+    display: block;
+  }
+  .about-copy {
+    margin-top: 32px;
+  }
   body:has(.graphics[data-scene="sog"]) .projects,
   body:has(.graphics[data-scene="gpc"]) .projects {
-    background: linear-gradient(90deg, rgb(var(--background-rgb) / 0.4392) 48%, transparent 60%);
+    background: transparent;
   }
   .projects > .section-heading,
   .projects > .projects-intro,
@@ -60,6 +78,9 @@
   }
 }
 @media (max-width: 700px) {
+  .company-logos-label {
+    flex-basis: 100%;
+  }
   html {
     scroll-padding-top: 90px;
   }

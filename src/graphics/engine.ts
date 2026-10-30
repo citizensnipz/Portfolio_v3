@@ -1,12 +1,19 @@
-import { Scene, WebGLRenderer } from "three";
+import { Raycaster, Scene, Vector2, WebGLRenderer } from "three";
 import { CameraRig } from "./camera-rig";
 import type { GraphicsContext, SceneLayer, Viewport } from "./scene-layer";
 import { sampleTimeline } from "./timeline";
+import { ParticleRibbon } from "./particle-ribbon";
+import { StatueOrbit } from "../ui/statue-orbit";
 
 export type GraphicsState = "loading" | "ready" | "lost" | "fallback";
 
 export class GraphicsEngine {
   private renderer: WebGLRenderer | null = null;
+  private ribbon: ParticleRibbon | null = null;
+  private orbit: StatueOrbit | null = null;
+  private orbiting = false;
+  private readonly pick = new Raycaster();
+  private readonly pointer = new Vector2();
   private readonly scene = new Scene();
   private readonly rig = new CameraRig();
   private readonly abort = new AbortController();
@@ -39,6 +46,7 @@ export class GraphicsEngine {
   private context(): GraphicsContext {
     if (!this.renderer) throw new Error("Renderer is unavailable");
     return {
+      animationSeconds: this.media.matches ? 0 : this.idleSeconds,
       renderer: this.renderer,
       scene: this.scene,
       camera: this.rig.camera,
@@ -66,6 +74,7 @@ export class GraphicsEngine {
         antialias: false,
       });
       this.renderer.setClearColor(0x111411, 0);
+      this.ribbon = new ParticleRibbon(this.invalidate);
       // Three.js installs its restoration listener first, before our layer hook.
       canvas.addEventListener("webglcontextlost", this.contextLost);
       canvas.addEventListener("webglcontextrestored", this.contextRestored);
@@ -76,6 +85,20 @@ export class GraphicsEngine {
         return;
       }
       this.ready = true;
+      this.orbit = new StatueOrbit(
+        (x, y) => {
+          if (!this.ready || this.lost || this.disposed || x < this.viewport.width * 0.5) return false;
+          this.pointer.set(x / this.viewport.width * 2 - 1, 1 - y / this.viewport.height * 2);
+          this.pick.setFromCamera(this.pointer, this.rig.camera);
+          return this.layer.hitTest?.(this.pick.ray) ?? false;
+        },
+        (dx, dy) => { this.rig.orbit(-dx, -dy); this.invalidate(); },
+        value => {
+          this.orbiting = value;
+          this.host.dataset.orbiting = String(value);
+          this.invalidate();
+        },
+      );
       this.observer.observe(this.host);
       window.addEventListener("resize", this.resize);
       document.addEventListener("visibilitychange", this.visibilityChanged);
@@ -115,6 +138,7 @@ export class GraphicsEngine {
     this.renderer.setSize(this.viewport.width, this.viewport.height, false);
     this.rig.resize(this.viewport);
     this.layer.resize(this.viewport);
+    this.ribbon?.resize(this.viewport);
     this.invalidate();
   };
 
@@ -140,8 +164,8 @@ export class GraphicsEngine {
       document.hidden
     )
       return;
-    const animated = !this.media.matches && !this.paused && this.progress < 1;
-    if (animated && this.lastTime)
+    const animated = !this.media.matches && !this.paused;
+    if (animated && !this.orbiting && this.lastTime)
       this.idleSeconds += Math.min((time - this.lastTime) / 1000, 0.05);
     this.lastTime = animated ? time : 0;
     const frame = sampleTimeline(this.progress);
@@ -149,12 +173,22 @@ export class GraphicsEngine {
       this.rig.update(frame, this.idleSeconds, this.media.matches);
       this.layer.update(frame);
       this.layer.beforeRender?.(this.context());
-      this.renderer.render(this.scene, this.rig.camera);
+      // Explicit passes avoid transparent-object sorting putting the ribbon over splats.
+      const autoClear = this.renderer.autoClear;
+      try {
+        this.renderer.autoClear = false;
+        this.renderer.clear();
+        if (!this.orbiting) this.ribbon?.render(this.renderer, this.progress, this.media.matches ? 0 : this.idleSeconds);
+        this.renderer.clearDepth();
+        this.renderer.render(this.scene, this.rig.camera);
+      } finally {
+        this.renderer.autoClear = autoClear;
+      }
     } catch (error) {
       this.fail(error);
       return;
     }
-    // No continuous loop below the graphics sequence, while paused, or in reduced motion.
+    // The ribbon keeps moving after the final splats disappear; pause still stops RAF.
     if (animated) this.invalidate();
   };
 
@@ -224,6 +258,10 @@ export class GraphicsEngine {
       this.contextRestored,
     );
     this.layer.dispose();
+    this.orbit?.dispose();
+    this.orbit = null;
+    this.ribbon?.dispose();
+    this.ribbon = null;
     this.renderer?.dispose();
     this.renderer?.forceContextLoss();
     this.renderer = null;

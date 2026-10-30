@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { BASE_TONES, DEFAULT_THEME, contrast, createTheme, hexToRgb, hsvToRgb, normalizeHex, rgbToHsv } from "../src/theme.ts";
+import { BASE_TONES, DEFAULT_THEME, contrast, createTheme, hexToRgb, hsvToRgb, normalizeHex, rgbToHsv, tintColor } from "../src/theme.ts";
 
 test("extreme and saturated visitor colors retain readable text and accents", () => {
   for (const seed of ["#000000", "#ffffff", "#0000ff", "#ff0000", "#00ff00", "#ff00ff", "#101010"]) {
@@ -14,7 +14,7 @@ test("extreme and saturated visitor colors retain readable text and accents", ()
 test("default keeps the authored accent and background; malformed saved colors fall back", () => {
   const theme = createTheme(DEFAULT_THEME);
   assert.deepEqual(theme.tones.accent, hexToRgb(DEFAULT_THEME));
-  assert.deepEqual(theme.tones.background, hexToRgb(BASE_TONES.background));
+  assert.deepEqual(theme.tones.background, tintColor(BASE_TONES.background, DEFAULT_THEME));
   assert.equal(createTheme("not-a-color").color, DEFAULT_THEME);
   assert.equal(normalizeHex(" #AbC "), "#aabbcc");
   assert.equal(normalizeHex("#12345z"), undefined);

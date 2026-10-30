@@ -1,4 +1,4 @@
-import { PerspectiveCamera, Vector3 } from "three";
+import { PerspectiveCamera, Spherical, Vector3 } from "three";
 import type { CameraPose } from "./scene-layer";
 import type { TimelineFrame } from "./timeline";
 import type { Viewport } from "./scene-layer";
@@ -11,6 +11,13 @@ export class CameraRig {
   private readonly orbitOffset = new Vector3();
   private readonly target = new Vector3();
   private readonly up = new Vector3(0, 1, 0);
+  private readonly spherical = new Spherical();
+  private yaw = 0;
+  private pitch = 0;
+  orbit(dx: number, dy: number): void {
+    this.yaw += dx * 0.008;
+    this.pitch = Math.max(-0.75, Math.min(0.75, this.pitch + dy * 0.005));
+  }
   configure(pose: CameraPose): void {
     this.pose = pose;
     this.camera.fov = pose.fov;
@@ -49,6 +56,10 @@ export class CameraRig {
       this.target.fromArray(this.pose.target);
       this.orbitOffset.fromArray(this.pose.position).sub(this.target);
       this.orbitOffset.applyAxisAngle(this.up, angle * 0.35);
+      this.spherical.setFromVector3(this.orbitOffset);
+      this.spherical.theta += this.yaw;
+      this.spherical.phi = Math.max(0.15, Math.min(Math.PI - 0.15, this.spherical.phi + this.pitch));
+      this.orbitOffset.setFromSpherical(this.spherical);
       if (this.mobile) this.orbitOffset.multiplyScalar(1.7);
       this.camera.position.copy(this.target).add(this.orbitOffset);
       this.camera.lookAt(this.target);
