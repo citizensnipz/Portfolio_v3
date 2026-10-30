@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPC and SOG — comparison</title>
+    <meta name="theme-color" content="#111411" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header>
+      <a href="./">← Portfolio</a
+      ><span class="eyebrow">GPC / SOG COMPRESSION STUDY</span>
+    </header>
+    <main>
+      <div class="intro">
+        <div>
+          <p class="eyebrow">SAME SCENE. SAME CAMERA.</p>
+          <h1>Less data.<br /><span>How much difference?</span></h1>
+        </div>
+        <p>
+          Compare GPC encodings with an actual SOG of the same original PLY. All
+          4,997,856 Gaussians and three SH bands are retained in the SOG.
+        </p>
+      </div>
+      <div class="controls">
+        <label
+          >Current GPC
+          <select id="baseline">
+            <option value="radegast-palette" selected>
+              Palette GPC · 95.47 MB
+            </option>
+            <option value="radegast">Conservative · 171.63 MB</option>
+            <option value="radegast-compact">Compact · 47.87 MB</option>
+          </select></label
+        >
+        <label
+          >Compare with
+          <select id="candidate">
+            <option value="radegast-sog" selected>SOG · 72.59 MB</option>
+            <option value="radegast-palette">Palette GPC · 95.47 MB</option>
+          </select></label
+        >
+        <button id="reset" type="button">Reset view</button
+        ><button id="detail" type="button">Statue detail</button
+        ><button id="orbit" type="button" aria-pressed="false">
+          Start orbit</button
+        ><span>Drag either view to orbit · scroll to zoom</span>
+      </div>
+      <div class="labels">
+        <div>
+          <h2 id="left-title">Palette GPC</h2>
+          <p id="left-status" role="status">Waiting to load</p>
+        </div>
+        <div>
+          <h2 id="right-title">SOG</h2>
+          <p id="right-status" role="status">Waiting to load</p>
+        </div>
+      </div>
+      <div
+        id="viewer"
+        tabindex="0"
+        aria-label="Synchronized side-by-side 3D scene comparison"
+      >
+        <div class="divider"></div>
+      </div>
+      <p class="note">
+        One canvas, synchronized viewpoints, identical rendering settings. The
+        GPC and SOG use their own lossy attribute encodings. The SOG uses 20
+        SH-clustering iterations and WebP effort 9, without pruning or
+        decimation. This is a visual comparison, not a claim of perceptual
+        equivalence.
+      </p>
+      <p class="credit">
+        Scene:
+        <a href="https://superspl.at/scene/3b0354d1"
+          >Radegast statue in autumn</a
+        >
+        by <a href="https://superspl.at/user/tanha">Pavel Tanhäuser</a> ·
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/"
+          >CC BY-NC 4.0</a
+        >
+        · Converted to experimental GPC and standard SOG.
+      </p>
+    </main>
+    <script type="module" src="/src/compare.ts"></script>
+  </body>
+</html>

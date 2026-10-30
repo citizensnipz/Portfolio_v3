@@ -1,0 +1,186 @@
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #eceee6;
+  background: #111411;
+  --accent: #c4d5a5;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header,
+main {
+  max-width: 1700px;
+  margin: auto;
+  padding-inline: clamp(20px, 4vw, 70px);
+}
+header {
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ffffff20;
+  font-size: 13px;
+}
+a {
+  color: inherit;
+  text-underline-offset: 4px;
+}
+.eyebrow {
+  font:
+    10px "Courier New",
+    monospace;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+.intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 36px;
+  margin: 45px 0 30px;
+}
+.intro h1 {
+  font-size: clamp(30px, 3.6vw, 52px);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  margin: 18px 0 0;
+}
+.intro h1 span {
+  color: #a2a99e;
+}
+.intro > p {
+  font-size: 13px;
+  color: #a2a99e;
+  max-width: 420px;
+  line-height: 1.7;
+  margin: 0;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 28px 0;
+  font-size: 12px;
+}
+.controls label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.controls span {
+  margin-left: auto;
+  color: #a2a99e;
+  font-size: 11px;
+}
+button,
+select {
+  font: inherit;
+  color: inherit;
+  border: 1px solid #b2c69a55;
+  background: #20271e;
+  padding: 10px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+button:hover {
+  border-color: var(--accent);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+button:focus-visible,
+select:focus-visible,
+#viewer:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.labels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid #ffffff20;
+  border-bottom: 0;
+}
+.labels > div {
+  padding: 18px 20px;
+}
+.labels > div + div {
+  border-left: 1px solid #ffffff20;
+}
+.labels h2 {
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0 0 8px;
+}
+.labels p {
+  font:
+    10px "Courier New",
+    monospace;
+  color: var(--accent);
+  margin: 0;
+  min-height: 24px;
+  line-height: 1.5;
+}
+#viewer {
+  height: clamp(360px, 55vw, 760px);
+  position: relative;
+  touch-action: none;
+  border: 1px solid #ffffff20;
+  background: #181e17;
+}
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.divider {
+  position: absolute;
+  inset: 0 auto 0 50%;
+  border-left: 1px solid #c4d5a577;
+  pointer-events: none;
+}
+.note,
+.credit {
+  color: #a2a99e;
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 22px 0;
+  max-width: 1000px;
+}
+.credit {
+  margin-bottom: 35px;
+}
+@media (max-width: 650px) {
+  .intro {
+    display: block;
+  }
+  .intro > p {
+    margin-top: 24px;
+  }
+  .controls span {
+    width: 100%;
+    margin: 8px 0 0;
+  }
+  .controls label {
+    width: 100%;
+  }
+  .labels > div {
+    padding: 14px 10px;
+  }
+  .labels h2 {
+    font-size: 12px;
+  }
+  #viewer {
+    height: 480px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto;
+  }
+}

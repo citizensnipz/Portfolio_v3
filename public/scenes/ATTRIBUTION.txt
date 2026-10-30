@@ -1,0 +1,7 @@
+Radegast statue in autumn
+Author: Pavel Tanhäuser (https://superspl.at/user/tanha)
+Source: https://superspl.at/scene/3b0354d1
+License: CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/)
+Converted from PLY to lossy GPC2, preserving all 4,997,856 Gaussians and SH3 bands.
+Rendered with Spark/Three.js; camera framing adapted from the published viewer.
+No endorsement implied. Noncommercial use only under the supplied scene license.

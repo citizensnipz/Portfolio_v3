@@ -1,0 +1,55 @@
+{
+  "url": "radegast-palette.gpc",
+  "codecRevision": "833bf7d36ef4b7cd4b64875a4249cec187dd9b41",
+  "bytes": 95471101,
+  "sourceBytes": 1179495494,
+  "sha256": "b31beba7efd3f1c6d4fb79cf2ffb80d0cb49cbc1e7504a29741e2c4b623ef0cf",
+  "sourceSha256": "c96b6feb1e6556218245bca966b51951e15a3039a52b63fc6611622c38fc0d0a",
+  "elapsedSeconds": 208.24560169992037,
+  "config": {
+    "family": "palette",
+    "profile": "sh-palette-smallest3-v1",
+    "posbits": 20,
+    "dc_bits": 12,
+    "shape_bits": 12,
+    "rotation_format": "smallest3-8",
+    "step": 0.004,
+    "paletteSize": 4096
+  },
+  "count": 4997856,
+  "degree": 3,
+  "bounds": [
+    [-53.312618255615234, -73.89894104003906, -114.49519348144531],
+    [70.5884017944336, 43.549415588378906, 76.18421936035156]
+  ],
+  "center": [3.698094081878663, -3.746059828996658, -8.459821701049805],
+  "radius": 35.27102418018429,
+  "camera": {
+    "fov": 80,
+    "position": [-0.4824713468551636, -1.6480026245117188, 0.8907006978988647],
+    "target": [2.9082980745739455, 0.07203165736990647, 8.725754529729324]
+  },
+  "cameraSource": "https://superspl.at/s?id=3b0354d1",
+  "profile": "sh-palette-smallest3-v1",
+  "paletteBytes": 189836,
+  "streamBytes": {
+    "normals_constant": 819,
+    "position": 29854299,
+    "position_lo": 975,
+    "position_step": 975,
+    "dc": 18570968,
+    "dc_lo": 975,
+    "dc_step": 975,
+    "scales": 17552453,
+    "scales_lo": 975,
+    "scales_step": 975,
+    "alpha": 4701087,
+    "sh_labels": 6341582,
+    "rotation_smallest3": 18134915
+  },
+  "shCoefficientRMSE": 0.044650277625619295,
+  "maxRotationAngleErrorDegrees": 0.4466870949773387,
+  "encodingSeconds": 208.24560169992037,
+  "trainingSampleCount": 131072,
+  "trainingSeed": 20261030
+}

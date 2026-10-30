@@ -1,0 +1,41 @@
+{
+  "url": "radegast.sog",
+  "bytes": 72589052,
+  "sourceBytes": 1179495494,
+  "sha256": "cd2d4fb006c2f62e8862d58c8d164df540715e402f24560fc35ce22d90708a88",
+  "sourceSha256": "c96b6feb1e6556218245bca966b51951e15a3039a52b63fc6611622c38fc0d0a",
+  "config": {
+    "encoder": "@playcanvas/splat-transform",
+    "version": "3.10.1",
+    "iterations": 20,
+    "webpEffort": 9,
+    "gpu": 0,
+    "backend": "d3d12",
+    "workers": 0
+  },
+  "count": 4997856,
+  "degree": 3,
+  "bounds": [
+    [-53.312618255615234, -73.89894104003906, -114.49519348144531],
+    [70.5884017944336, 43.549415588378906, 76.18421936035156]
+  ],
+  "center": [3.698094081878663, -3.746059828996658, -8.459821701049805],
+  "radius": 35.27102418018429,
+  "camera": {
+    "fov": 80,
+    "position": [-0.4824713468551636, -1.6480026245117188, 0.8907006978988647],
+    "target": [2.9082980745739455, 0.07203165736990647, 8.725754529729324]
+  },
+  "cameraSource": "https://superspl.at/s?id=3b0354d1",
+  "format": "sog",
+  "archiveMembers": {
+    "means_l.webp": 13333316,
+    "means_u.webp": 1727288,
+    "quats.webp": 15670458,
+    "scales.webp": 13391360,
+    "sh0.webp": 17277476,
+    "shN_centroids.webp": 2472956,
+    "shN_labels.webp": 8699626,
+    "meta.json": 15624
+  }
+}
