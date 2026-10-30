@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Sulphur+Point:wght@400&amp;display=swap"
       rel="stylesheet"
     />
     <title>Josh Kroslowitz — Software Engineer</title>
@@ -24,7 +24,7 @@
       <a class="wordmark" href="#home" aria-label="Josh Kroslowitz, home">
         <span>Josh Kroslowitz<span class="wordmark-dot">.</span></span></a
       >
-      <nav aria-label="Main navigation">
+      <nav id="main-navigation" aria-label="Main navigation">
         <a href="#about">About</a><a href="#projects">Projects</a>
         <a
           href="https://github.com/citizensnipz"
@@ -64,7 +64,35 @@
           >Contact <span aria-hidden="true">↗</span></a
         >
       </nav>
+      <div class="header-actions">
+        <div class="theme-control">
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-expanded="false" aria-controls="theme-panel" aria-haspopup="dialog" aria-label="Change theme color" hidden>
+          <span class="theme-swatch" aria-hidden="true"></span>
+          <!-- <span class="theme-toggle-label">Color</span> -->
+        </button>
+        <div id="theme-panel" class="theme-panel" role="dialog" aria-labelledby="theme-title" hidden>
+          <div class="theme-panel-heading"><strong id="theme-title">Theme color</strong><button id="theme-close" type="button" aria-label="Close color picker">×</button></div>
+          <div class="theme-wheel" aria-hidden="true"><span class="theme-wheel-thumb"></span></div>
+          <div class="theme-sliders">
+            <label for="theme-hue">Hue</label><input id="theme-hue" type="range" min="0" max="359" step="1">
+            <label for="theme-saturation">Saturation</label><input id="theme-saturation" type="range" min="0" max="100" step="1">
+            <label for="theme-brightness">Brightness</label><input id="theme-brightness" type="range" min="0" max="100" step="1">
+          </div>
+          <div class="theme-rgb">
+            <label>R<input id="theme-r" type="number" min="0" max="255" step="1" required aria-label="Red"></label>
+            <label>G<input id="theme-g" type="number" min="0" max="255" step="1" required aria-label="Green"></label>
+            <label>B<input id="theme-b" type="number" min="0" max="255" step="1" required aria-label="Blue"></label>
+          </div>
+          <div class="theme-panel-bottom"><label for="theme-hex">Hex</label><input id="theme-hex" type="text" spellcheck="false" autocomplete="off" maxlength="7"><button id="theme-reset" type="button">Reset</button></div>
+          <p>Saved in this browser. Tints adjust for readability.</p>
+        </div>
+        </div>
+        <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu" aria-haspopup="dialog" hidden><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      </div>
     </header>
+    <dialog id="mobile-menu" class="mobile-menu" aria-labelledby="mobile-menu-title">
+      <div class="mobile-menu-heading"><span id="mobile-menu-title">Navigation</span><button id="mobile-menu-close" type="button" aria-label="Close navigation menu">×</button></div>
+    </dialog>
 
     <main id="main">
       <section
@@ -130,7 +158,7 @@
           </h2>
           <div class="about-copy">
             <p class="large-copy">
-              I’m Josh Kroslowitz, a software engineer interested in making
+              I’m <b>Josh Kroslowitz</b>, a software engineer interested in making
               complex visual ideas feel intuitive.
             </p>
             <p>
@@ -353,7 +381,9 @@
     </p>
     <footer class="site-footer section-shell">
       <span>© <span id="year">2026</span> Josh Kroslowitz</span><span></span
-      ><a href="#home">Back to top ↑</a>
+      ><div class="footer-actions">
+        <a href="#home">Back to top ↑</a>
+      </div>
     </footer>
     <noscript
       ><p class="noscript-note">

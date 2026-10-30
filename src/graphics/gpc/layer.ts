@@ -9,6 +9,7 @@ import type { GraphicsContext, SceneLayer, Viewport } from "../scene-layer";
 import type { TimelineFrame } from "../timeline";
 import { openGpcStream } from "./stream";
 import { createSpatialMasks, GROUND_PLANE, STATUE_MASK } from "./spatial-masks";
+import { subscribeTheme } from "../../theme";
 
 interface SceneManifest {
   format?: "gpc" | "sog";
@@ -49,6 +50,7 @@ export class GpcSceneLayer implements SceneLayer {
   private frame?: Readonly<TimelineFrame>;
   private masks?: ReturnType<typeof createSpatialMasks>;
   private canvas?: HTMLCanvasElement;
+  private unsubscribeTheme?: () => void;
   private readonly reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   constructor(
@@ -142,6 +144,12 @@ export class GpcSceneLayer implements SceneLayer {
     this.mesh.objectModifier = this.masks.modifier;
     this.mesh.updateGenerator();
     this.canvas = context.renderer.domElement;
+    this.unsubscribeTheme = subscribeTheme(theme => {
+      const [r, g, b] = theme.tones.accent;
+      this.masks!.accent.value.set(r / 255, g / 255, b / 255);
+      this.mesh!.needsUpdate = true;
+      context.invalidate();
+    });
     // Frame the capture using the codec's bounded 1–99 percentile estimate.
     // No pruning, downsampling, or conversion of the stored geometry.
     const scale = 2.6 / manifest.radius;
@@ -223,6 +231,7 @@ export class GpcSceneLayer implements SceneLayer {
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
+    this.unsubscribeTheme?.();
     this.cancelLoad?.();
     this.root.removeFromParent();
     this.spark?.removeFromParent();

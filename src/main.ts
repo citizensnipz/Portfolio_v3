@@ -1,5 +1,9 @@
 import "./style.css";
 import "./responsive.css";
+import "./ui/theme-picker.css";
+import "./ui/navigation.css";
+import { initializeNavigation } from "./ui/navigation";
+import { initializeThemePicker } from "./ui/theme-picker";
 import { ScrollProgress } from "./ui/scroll-progress";
 import type { GraphicsEngine, GraphicsState } from "./graphics/engine";
 import type { SceneLayer } from "./graphics/scene-layer";
@@ -7,6 +11,8 @@ import type { SceneLayer } from "./graphics/scene-layer";
 const host = document.querySelector<HTMLElement>("#graphics")!;
 const status = document.querySelector<HTMLElement>("#graphics-status")!;
 const toggle = document.querySelector<HTMLButtonElement>("#motion-toggle")!;
+const disposeThemePicker = initializeThemePicker();
+const disposeNavigation = initializeNavigation();
 let graphics: GraphicsEngine | undefined;
 let scroll: ScrollProgress | undefined;
 let paused = false;
@@ -125,6 +131,8 @@ void startGraphics();
 
 function dispose(): void {
   disposed = true;
+  disposeThemePicker();
+  disposeNavigation();
   scroll?.dispose();
   graphics?.dispose();
   sectionObserver.disconnect();

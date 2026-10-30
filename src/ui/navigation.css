@@ -1,0 +1,25 @@
+.header-actions { display: flex; align-items: center; gap: 18px; margin-left: 30px; }
+.site-header > nav { margin-left: auto; }
+.theme-control { position: relative; }
+.header-actions .theme-toggle { font-size: 12px; }
+.mobile-menu-toggle, .mobile-menu-heading button { border: 0; background: none; color: inherit; width: 44px; height: 44px; padding: 0; align-items: center; justify-content: center; }
+.mobile-menu-toggle, .nav-social-label { display: none; }
+.mobile-menu { position: fixed; inset: 0 0 0 auto; margin: 0; width: min(320px, calc(100vw - 40px)); height: 100dvh; max-height: 100dvh; max-width: none; padding: 16px 28px max(28px, env(safe-area-inset-bottom)); border: 0; border-left: 1px solid var(--line); background: rgb(var(--background-rgb)); color: rgb(var(--text-rgb)); overflow-y: auto; }
+.mobile-menu[open] { display: flex; flex-direction: column; animation: menu-enter 180ms ease-out; }
+.mobile-menu::backdrop { background: rgb(0 0 0 / 0.55); }
+.mobile-menu-heading { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
+.mobile-menu-heading button { display: flex; font-size: 28px; }
+.mobile-menu #main-navigation { display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin-top: 36px; font-size: 20px; }
+.mobile-menu #main-navigation a { min-height: 48px; padding: 12px 0; }
+.mobile-menu #main-navigation .nav-external { display: flex; justify-content: flex-start; gap: 12px; }
+.mobile-menu .nav-social-label { display: inline; margin-left: 0; }
+.mobile-menu .contact-nav { border: 0; }
+@keyframes menu-enter { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@media (max-width: 1000px) { .header-actions { margin-left: 20px; } }
+@media (max-width: 700px) {
+  .header-actions { margin-left: auto; gap: 4px; }
+  .mobile-menu-toggle:not([hidden]) { display: flex; }
+  .theme-toggle-label { display: none; }
+  .header-actions .theme-toggle { width: 44px; justify-content: center; }
+  .header-actions .theme-panel { position: fixed; top: 88px; right: 24px; max-height: calc(100dvh - 108px); }
+}

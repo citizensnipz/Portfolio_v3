@@ -9,6 +9,7 @@ import {
 } from "three";
 import type { GraphicsContext, SceneLayer, Viewport } from "./scene-layer";
 import type { TimelineFrame } from "./timeline";
+import { rgbToHex, subscribeTheme, tintColor } from "../theme";
 
 function pointSet(
   positions: number[],
@@ -35,8 +36,9 @@ export class PlaceholderLayer implements SceneLayer {
   private readonly environment = new Group();
   private readonly body = new Group();
   private readonly head = new Group();
+  private unsubscribeTheme?: () => void;
 
-  initialize({ scene }: GraphicsContext): void {
+  initialize({ scene, invalidate }: GraphicsContext): void {
     const knot = new TorusKnotGeometry(1.18, 0.37, 300, 24, 2, 3);
     const points = pointSet(
       Array.from(knot.getAttribute("position").array),
@@ -84,6 +86,15 @@ export class PlaceholderLayer implements SceneLayer {
     this.environment.add(pointSet(dust, "#84956d", 0.014, 0.35));
     this.root.add(this.environment, this.body, this.head);
     scene.add(this.root);
+    this.unsubscribeTheme = subscribeTheme(theme => {
+      this.root.traverse(object => {
+        if (!(object instanceof Points)) return;
+        const material = object.material as PointsMaterial;
+        material.userData.originalColor ??= `#${material.color.getHexString()}`;
+        material.color.set(rgbToHex(tintColor(material.userData.originalColor, theme.color)));
+      });
+      invalidate();
+    });
   }
 
   update(frame: Readonly<TimelineFrame>): void {
@@ -115,6 +126,7 @@ export class PlaceholderLayer implements SceneLayer {
   }
 
   dispose(): void {
+    this.unsubscribeTheme?.();
     this.root.removeFromParent();
     this.root.traverse((object) => {
       if (object instanceof Points) {

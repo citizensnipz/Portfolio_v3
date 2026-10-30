@@ -22,6 +22,7 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
   const circle = dyno.dynoFloat(1);
   const cylinder = dyno.dynoFloat(1);
   const motion = dyno.dynoFloat(1);
+  const accent = dyno.dynoVec3(new Vector3(196 / 255, 213 / 255, 165 / 255));
   const base = dyno.dynoVec3(new Vector3(...STATUE_MASK.base));
   const radius = dyno.dynoFloat(STATUE_MASK.radius);
   const height = dyno.dynoFloat(STATUE_MASK.height);
@@ -34,6 +35,7 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
       circle: "float",
       cylinder: "float",
       motion: "float",
+      accent: "vec3",
       base: "vec3",
       radius: "float",
       height: "float",
@@ -41,7 +43,7 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
       ceiling: "float",
     },
     outTypes: { gsplat: dyno.Gsplat },
-    inputs: { upper, circle, cylinder, motion, base, radius, height, extent, ceiling },
+    inputs: { upper, circle, cylinder, motion, accent, base, radius, height, extent, ceiling },
     globals: () => [
       // Integer hashing keeps the variation stable across seeks and across frames.
       `float portfolioMaskHash(uint x) {
@@ -89,7 +91,7 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
       `float travel = life * life * ${i.motion} * (statue ? 0.85 : 1.25);`,
       `${o.gsplat}.center += drift * travel;`,
       `float shimmer = sin(life * 3.14159265) * ${i.motion} * 0.7;`,
-      `${o.gsplat}.rgba.rgb = mix(${i.gsplat}.rgba.rgb, vec3(0.77, 0.84, 0.65), shimmer);`,
+      `${o.gsplat}.rgba.rgb = mix(${i.gsplat}.rgba.rgb, ${i.accent}, shimmer);`,
       // A sparse population remains as dust after the initial breakup, avoiding a fog bank.
       `float dust = mix(1.0, random.x > 0.72 ? 1.0 : 0.0, smoothstep(0.15, 0.5, life) * ${i.motion});`,
       "float visibility = (1.0 - smoothstep(0.15, 1.0, life)) * dust;",
@@ -98,5 +100,5 @@ export function createSpatialMasks(outerRadius: number, upperHeight = 80) {
       `${o.gsplat}.rgba.a *= visibility;`,
     ],
   });
-  return { modifier, upper, circle, cylinder, motion };
+  return { modifier, upper, circle, cylinder, motion, accent };
 }

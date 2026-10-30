@@ -3,7 +3,7 @@
 @media (min-width: 701px) {
   body:has(.graphics[data-scene="sog"]) .projects,
   body:has(.graphics[data-scene="gpc"]) .projects {
-    background: linear-gradient(90deg, #11141170 48%, transparent 60%);
+    background: linear-gradient(90deg, rgb(var(--background-rgb) / 0.4392) 48%, transparent 60%);
   }
   .projects > .section-heading,
   .projects > .projects-intro,
@@ -238,7 +238,7 @@
     margin-left: auto;
   }
   .graphics:after {
-    background: linear-gradient(180deg, #11141155, transparent 80%);
+    background: linear-gradient(180deg, rgb(var(--background-rgb) / 0.3333), transparent 80%);
   }
   .graphics[data-state="fallback"]:before,
   .graphics[data-state="lost"]:before {
