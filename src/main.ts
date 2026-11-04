@@ -37,6 +37,7 @@ if (placeholderMode)
 document.querySelector("#year")!.textContent = String(new Date().getFullYear());
 
 function updateStatus(state: GraphicsState, reducedMotion: boolean): void {
+  status.dataset.state = state;
   if (state === "ready" && loadSeconds === undefined) {
     const mark = performance.mark("portfolio:scene-ready");
     loadSeconds = mark.startTime / 1000;
@@ -52,7 +53,7 @@ function updateStatus(state: GraphicsState, reducedMotion: boolean): void {
       : state === "fallback"
         ? "Static preview · graphics unavailable"
         : state === "loading"
-          ? `Loading ${sceneName}`
+          ? "Loading..."
           : reducedMotion
             ? "Reduced motion · scroll to explore"
             : `Live ${sceneName}`;
@@ -96,6 +97,7 @@ document
   .forEach((section) => sectionObserver.observe(section));
 
 async function startGraphics(): Promise<void> {
+  updateStatus("loading", window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   try {
     // The document remains immediately usable while the optional graphics chunk loads.
     const { GraphicsEngine } = await import("./graphics/engine");
@@ -111,7 +113,7 @@ async function startGraphics(): Promise<void> {
           location.href,
         ).href,
         (message) => {
-          status.textContent = message;
+          if (status.dataset.state !== "loading") status.textContent = message;
         },
       );
     }
