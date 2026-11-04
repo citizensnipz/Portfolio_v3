@@ -236,13 +236,13 @@ export class GpcSceneLayer implements SceneLayer {
       onDirty: context.invalidate,
       enableLod: this.streamed,
       ...(this.streamed ? {
-        lodSplatCount: 600000,
-        maxPagedSplats: 1048576,
-        // Spend detail in front of the camera; retain coarse surroundings for turns.
+        lodSplatCount: 800000,
+        maxPagedSplats: 1572864,
+        // Prioritize the camera cone; keep only very coarse off-camera context.
         coneFov0: 80,
         coneFov: 100,
-        coneFoveate: 0.1,
-        behindFoveate: 0.02,
+        coneFoveate: 0.02,
+        behindFoveate: 0.001,
       } : {}),
       sortRadial: false,
       minSortIntervalMs: 32,
