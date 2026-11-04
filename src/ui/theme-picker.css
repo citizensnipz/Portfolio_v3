@@ -20,5 +20,4 @@
 .theme-panel p { font-size: 10px; line-height: 1.5; margin: 14px 0 0; color: var(--muted); }
 .theme-panel input:focus-visible, .theme-panel button:focus-visible, .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .theme-panel[hidden], .theme-toggle[hidden] { display: none; }
-.project-preview img { filter: hue-rotate(var(--theme-rotation, 0deg)) saturate(var(--theme-saturation, 1)); }
 @media (max-width: 370px) { .footer-actions { gap: 14px; } }
