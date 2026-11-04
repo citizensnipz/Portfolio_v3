@@ -235,7 +235,15 @@ export class GpcSceneLayer implements SceneLayer {
       renderer: context.renderer,
       onDirty: context.invalidate,
       enableLod: this.streamed,
-      ...(this.streamed ? { lodSplatCount: 350000, maxPagedSplats: 1048576 } : {}),
+      ...(this.streamed ? {
+        lodSplatCount: 600000,
+        maxPagedSplats: 1048576,
+        // Spend detail in front of the camera; retain coarse surroundings for turns.
+        coneFov0: 80,
+        coneFov: 100,
+        coneFoveate: 0.1,
+        behindFoveate: 0.02,
+      } : {}),
       sortRadial: false,
       minSortIntervalMs: 32,
     });

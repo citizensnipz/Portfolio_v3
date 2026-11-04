@@ -4,7 +4,7 @@ Phones use `radegast-mobile.json`, pointing to `radegast-lod.rad` and its siblin
 
 Generated from `radegast.sog` using Spark v2.4.0 `build-lod --quality --rad-chunked`. On Windows the converter needed its main workload moved onto a thread with a 64 MiB stack to avoid a stack overflow after tree construction. This only changes offline tooling, not the website.
 
-Streaming uses a 350,000 splat rendering target and 1,048,576 resident page slots. These are splat limits, not a guarantee of total browser memory use. The original coordinate framing and object-space dissolve modifier are shared with the SOG loader. All RAD/RADC files must be deployed together with the manifest.
+Streaming uses a 600,000 splat rendering target and 1,048,576 resident page slots. These are splat limits, not a guarantee of total browser memory use. The original coordinate framing and object-space dissolve modifier are shared with the SOG loader. All RAD/RADC files must be deployed together with the manifest.
 
 Physical iPhone validation is still required; desktop browser checks do not establish iOS stability.
 
@@ -17,3 +17,7 @@ Physical iPhone validation is still required; desktop browser checks do not esta
 - At 70% scroll the environment/ground masks were zero and statue mask was approximately 0.6; at the bottom all were zero; returning to the top restored all three to 1.
 - These checks used desktop Chromium, not actual iOS/WebKit. The ready timer records loader initialization, not completion of streamed refinement. Phone stability and final visual quality still require a physical-device check.
 - Follow-up publication validation: delayed downloads show the loading overlay within the initial mobile viewport; it hides on the first active streamed splats. Desktop requests SOG only; mobile requests RAD/RADC only. Build and all 14 tests pass.
+
+## Detail refinement investigation
+
+The original mobile configuration reached 348,178 active splats against its 350,000 target: streaming was progressing but detail was capped. Increased the target to 600,000 and changed camera cones to 80/100 degrees with peripheral/behind scales 0.1/0.02. The page cache remains 16 pages (1,048,576 splat slots). Chromium phone emulation reached 550,024–555,035 active splats, with 18 unique chunk requests and no page errors. The cache was full, so this remains a bounded quality compromise rather than a promise to load full detail. The dissolve masks still reached the expected partial state. Physical iPhone quality, performance, and memory stability need checking; a higher active count alone does not quantify perceived sharpness.
