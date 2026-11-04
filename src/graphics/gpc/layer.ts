@@ -12,7 +12,7 @@ import { createSpatialMasks, GROUND_PLANE, STATUE_MASK } from "./spatial-masks";
 import { subscribeTheme } from "../../theme";
 
 interface SceneManifest {
-  format?: "gpc" | "sog";
+  format?: "gpc" | "sog" | "rad";
   url: string;
   count: number;
   center: number[];
@@ -47,6 +47,8 @@ export class GpcSceneLayer implements SceneLayer {
   private spark?: SparkRenderer;
   private cancelLoad?: () => void;
   private disposed = false;
+  private streamed = false;
+  private started = false;
   private frame?: Readonly<TimelineFrame>;
   private masks?: ReturnType<typeof createSpatialMasks>;
   private canvas?: HTMLCanvasElement;
@@ -62,6 +64,7 @@ export class GpcSceneLayer implements SceneLayer {
 
   constructor(
     private readonly manifestUrl: string,
+    private readonly onStarted: () => void,
     private readonly progress: (message: string) => void,
   ) {}
 
@@ -77,61 +80,67 @@ export class GpcSceneLayer implements SceneLayer {
       !manifest.center.every(Number.isFinite)
     )
       throw new Error("Invalid scene framing");
-    if (manifest.format === "sog") {
-      this.progress("Downloading SOG…");
-      const response = await fetch(
-        new URL(manifest.url, this.manifestUrl).href,
-        { signal: context.signal },
-      );
-      if (!response.ok)
-        throw new Error(`SOG request failed: ${response.status}`);
-      const fileBytes = await response.arrayBuffer();
-      this.progress("Decoding SOG…");
-      this.splats = new PackedSplats({
-        fileBytes,
-        fileType: SplatFileType.PCSOGSZIP,
-        fileName: manifest.url,
-        lod: false,
-      });
+    this.streamed = manifest.format === "rad";
+    if (this.streamed) {
+      this.mesh = new SplatMesh({ url: new URL(manifest.url, this.manifestUrl).href, paged: true, raycastable: false });
     } else {
-      const decoded = await openGpcStream(
-        new URL(manifest.url, this.manifestUrl).href,
-        context.signal,
-        (count, total) => {
-          this.progress(
-            `Loading statue · ${Math.round((count / total) * 100)}% decoded`,
-          );
-        },
-      );
-      this.cancelLoad = decoded.cancel;
-      if (decoded.header.count !== manifest.count) {
-        decoded.cancel();
-        throw new Error("Scene manifest count mismatch");
+      if (manifest.format === "sog") {
+        this.progress("Downloading SOG…");
+        const response = await fetch(
+          new URL(manifest.url, this.manifestUrl).href,
+          { signal: context.signal },
+        );
+        if (!response.ok)
+          throw new Error(`SOG request failed: ${response.status}`);
+        const fileBytes = await response.arrayBuffer();
+        this.progress("Decoding SOG…");
+        this.splats = new PackedSplats({
+          fileBytes,
+          fileType: SplatFileType.PCSOGSZIP,
+          fileName: manifest.url,
+          lod: false,
+        });
+      } else {
+        const decoded = await openGpcStream(
+          new URL(manifest.url, this.manifestUrl).href,
+          context.signal,
+          (count, total) => {
+            this.progress(
+              `Loading statue · ${Math.round((count / total) * 100)}% decoded`,
+            );
+          },
+        );
+        this.cancelLoad = decoded.cancel;
+        if (decoded.header.count !== manifest.count) {
+          decoded.cancel();
+          throw new Error("Scene manifest count mismatch");
+        }
+        this.splats = new PackedSplats({
+          stream: decoded.stream,
+          streamLength: decoded.streamLength,
+          fileType: SplatFileType.PLY,
+          fileName: "decoded-gpc.ply",
+          lod: false,
+        });
       }
-      this.splats = new PackedSplats({
-        stream: decoded.stream,
-        streamLength: decoded.streamLength,
-        fileType: SplatFileType.PLY,
-        fileName: "decoded-gpc.ply",
-        lod: false,
+      await untilAborted(this.splats.initialized, context.signal);
+      if (this.splats.getNumSplats() !== manifest.count)
+        throw new Error("Renderer splat count mismatch");
+      context.renderer.domElement.dataset.splatCount = String(
+        this.splats.getNumSplats(),
+      );
+      if (this.disposed || context.signal.aborted) {
+        this.splats.dispose();
+        return;
+      }
+      this.mesh = new SplatMesh({
+        packedSplats: this.splats,
+        raycastable: false,
+        enableLod: false,
       });
     }
-    await untilAborted(this.splats.initialized, context.signal);
-    if (this.splats.getNumSplats() !== manifest.count)
-      throw new Error("Renderer splat count mismatch");
-    context.renderer.domElement.dataset.splatCount = String(
-      this.splats.getNumSplats(),
-    );
-    if (this.disposed || context.signal.aborted) {
-      this.splats.dispose();
-      return;
-    }
-    this.mesh = new SplatMesh({
-      packedSplats: this.splats,
-      raycastable: false,
-      enableLod: false,
-    });
-    await untilAborted(this.mesh.initialized, context.signal);
+    await untilAborted(this.mesh!.initialized, context.signal);
+    if (!this.mesh) throw new Error("Scene mesh unavailable");
     if (this.disposed || context.signal.aborted) {
       this.mesh.dispose();
       return;
@@ -199,6 +208,10 @@ export class GpcSceneLayer implements SceneLayer {
   }
 
   beforeRender(context: GraphicsContext): void {
+    if (!this.started && this.spark && this.spark.activeSplats > 0) {
+      this.started = true;
+      this.onStarted();
+    }
     if (!this.masks || !this.mesh || !this.frame) return;
     const dissolving = [this.frame.upperEnvironment, this.frame.circleRadius, this.frame.cylinderLength]
       .some(remaining => remaining > 0 && remaining < 1);
@@ -221,7 +234,8 @@ export class GpcSceneLayer implements SceneLayer {
     this.spark = new SparkRenderer({
       renderer: context.renderer,
       onDirty: context.invalidate,
-      enableLod: false,
+      enableLod: this.streamed,
+      ...(this.streamed ? { lodSplatCount: 350000, maxPagedSplats: 1048576 } : {}),
       sortRadial: false,
       minSortIntervalMs: 32,
     });

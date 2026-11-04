@@ -19,6 +19,7 @@
   .about-copy {
     margin-top: 32px;
   }
+  body:has(.graphics[data-scene="rad"]) .projects,
   body:has(.graphics[data-scene="sog"]) .projects,
   body:has(.graphics[data-scene="gpc"]) .projects {
     background: transparent;

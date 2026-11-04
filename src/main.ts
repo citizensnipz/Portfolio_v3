@@ -10,6 +10,8 @@ import type { SceneLayer } from "./graphics/scene-layer";
 
 const host = document.querySelector<HTMLElement>("#graphics")!;
 const status = document.querySelector<HTMLElement>("#graphics-status")!;
+const loader = document.querySelector<HTMLElement>("#scene-loader")!;
+let sceneStarted = false;
 const toggle = document.querySelector<HTMLButtonElement>("#motion-toggle")!;
 const disposeThemePicker = initializeThemePicker();
 const disposeNavigation = initializeNavigation();
@@ -23,12 +25,14 @@ const placeholderMode = params.get("scene") === "placeholder";
 const sceneName = placeholderMode ? "point study" : "Gaussian statue";
 const compactMode = params.get("quality") === "compact";
 const gpcMode = params.get("scene") === "gpc" || compactMode;
-const sceneFormat = placeholderMode ? "placeholder" : gpcMode ? "gpc" : "sog";
+const mobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const streamedMode = !placeholderMode && !gpcMode && mobileDevice;
+const sceneFormat = placeholderMode ? "placeholder" : gpcMode ? "gpc" : streamedMode ? "rad" : "sog";
 const manifestName = compactMode
   ? "radegast-compact"
   : gpcMode
     ? "radegast"
-    : "radegast-sog";
+    : streamedMode ? "radegast-mobile" : "radegast-sog";
 host.dataset.scene = sceneFormat;
 if (placeholderMode)
   document.querySelector(".scene-label div")!.innerHTML =
@@ -38,6 +42,7 @@ document.querySelector("#year")!.textContent = String(new Date().getFullYear());
 
 function updateStatus(state: GraphicsState, reducedMotion: boolean): void {
   status.dataset.state = state;
+  loader.hidden = state !== "loading" && !(state === "ready" && streamedMode && !sceneStarted);
   if (state === "ready" && loadSeconds === undefined) {
     const mark = performance.mark("portfolio:scene-ready");
     loadSeconds = mark.startTime / 1000;
@@ -53,7 +58,7 @@ function updateStatus(state: GraphicsState, reducedMotion: boolean): void {
       : state === "fallback"
         ? "Static preview · graphics unavailable"
         : state === "loading"
-          ? "Loading..."
+          ? ""
           : reducedMotion
             ? "Reduced motion · scroll to explore"
             : `Live ${sceneName}`;
@@ -112,6 +117,7 @@ async function startGraphics(): Promise<void> {
           `${import.meta.env.BASE_URL}scenes/${manifestName}.json`,
           location.href,
         ).href,
+        () => { sceneStarted = true; loader.hidden = true; },
         (message) => {
           if (status.dataset.state !== "loading") status.textContent = message;
         },

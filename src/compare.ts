@@ -99,7 +99,7 @@ async function load(i: number, name: string) {
     location.href,
   ).href;
   status[i].textContent = "Loading…";
-  const layer = new GpcSceneLayer(manifestUrl, (text) => {
+  const layer = new GpcSceneLayer(manifestUrl, () => {}, (text) => {
     status[i].textContent = text;
   });
   layers[i] = layer;
