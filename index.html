@@ -109,13 +109,13 @@
             Bring<br />software<br /><span>to life.</span>
           </h1>
           <p class="hero-description">
-            Exploring the space between pixels and presence.<br
+            Code is a digital sandbox.<br
               class="desktop-break"
             />
-            Browser graphics, Gaussian splatting, and interactive worlds.
+            Let's create together.
           </p>
           <a class="text-link" href="#projects"
-            >Explore selected projects <span aria-hidden="true">↗</span></a
+            >Explore selected projects</a
           >
         </div>
         <div class="scene-label">
@@ -161,15 +161,11 @@
               I’m <b>Josh Kroslowitz</b>, a software engineer passionate about building immersive products and visual experiences.
             </p>
             <p>
-              My work explores browser graphics, Gaussian splatting, 3D
-              processing, and interactive development. I genuinely love building
-              things that people can experience that challenge my thinking and creativity.
+              My work has taken me from developing interactive 3D applications in Unity and C# to building web applications, backend services, and cloud infrastructure using TypeScript, React, Next.js, Python, and PostgreSQL. More recently, I've been working on Gaussian splatting, browser-based 3D rendering, and GPU processing pipelines, helping build a platform that turns real-world captures into interactive 3D environments.
             </p>
             <p class="editorial-note">
-              I started out as an animator in school but found that building tools and seeing people use them was more fulfilling than just creating art.
-              I then transitioned into software engineering and I've never looked back. Working on everything from small tools to
-              large scale enterprise products has taught me a lot about how to build products that are scalable and maintainable
-              as well as visually appealing, engaging and professional.
+              I started out studying animation but discovered I enjoyed building the tools behind creative experiences more than creating the art itself. I've been writing software ever since.
+              I've worked on everything from small development tools to enterprise applications and production systems. What I enjoy most is solving difficult technical problems, improving performance, and building software that's not just functional, but genuinely enjoyable to use.
             </p>
             <div class="company-logos" aria-label="Companies I have worked for">
               <span class="company-logos-label">Companies I've worked for:</span>
@@ -200,52 +196,49 @@
         </div>
         <div class="projects-intro">
           <h2 id="projects-title">
-            Personal projects<br /><span>and experiments.</span>
+            Personal projects<br /><span>visualized</span>
           </h2>
-          <p>
+          <!-- <p>
             A space for the projects, questions,<br />and technical details
             behind the work.
-          </p>
+          </p> -->
         </div>
         <div class="project-grid">
           <article class="project-card">
             <div class="project-preview motion-preview">
               <img
-                src="/images/musubi-placeholder.svg"
-                alt="Abstract interwoven paths, a placeholder for Musubi Motion project media"
+                src="/images/musubi-scrnsht.png"
+                alt="Screenshot of Musubi Motion, a browser-based 3D animation editor"
                 loading="lazy"
                 width="800"
                 height="540"
-              /><span class="preview-tag">PROJECT PREVIEW / PLACEHOLDER</span
+              /><span class="preview-tag">MUSUBI MOTION</span
               ><span class="preview-number" aria-hidden="true">01</span>
             </div>
             <div class="project-meta">
-              <span>INTERACTIVE DEVELOPMENT</span><span>01</span>
+              <span>GAUSSIAN SPLAT NATIVE ANIMATION STUDIO</span><span>01</span>
             </div>
             <h3>Musubi Motion</h3>
             <p>
-              Add a short introduction to Musubi Motion: the idea, your
-              contribution, and the experience it creates.
+              A browser-based, splat-native 3D animation editor bringing traditional character animation tools to Gaussian splatting.
             </p>
             <ul
               class="project-highlights"
               aria-label="Technical highlights to fill in"
             >
-              <li>Core technology</li>
-              <li>Interaction approach</li>
-              <li>Technical challenge</li>
+              <li>Three.js / Spark / WebGL2</li>
+              <li>Traditional animation tool for Gaussian splats</li>
+              <li>Dynamic splat generation and deformations</li>
             </ul>
             <details>
               <summary>Project notes <span aria-hidden="true">+</span></summary>
               <div class="project-details">
                 <p>
-                  Use this space for your role, implementation decisions, and
-                  lessons learned. Replace the illustration above with a
-                  screenshot or a video preview.
+                  Musubi Motion is entirely browser-based and built with Three.js, Spark and WebGL2. It incorporates elements of several existing libraries such as UI elements,
+                  but is built from the ground up to be a fully featured animation studio for Gaussian splats. Many parts including splat deformation and FBX to splat conversion are custom built.
                 </p>
                 <p>
-                  Repository and live demo links can be added here when
-                  available.
+                  <a href="https://github.com/musubi-interactive/Musubi-Motion" target="_blank" rel="noopener noreferrer">Musubi Motion on GitHub</a>
                 </p>
               </div>
             </details>
@@ -253,8 +246,8 @@
           <article class="project-card">
             <div class="project-preview gauss-preview">
               <img
-                src="/images/gaussmark-placeholder.svg"
-                alt="Abstract point cloud landscape, a placeholder for GaussMark project media"
+                src="/images/gaussmark_screenshot.png"
+                alt="Screenshot of GaussMark, a browser-based 3D rendering benchmarking tool"
                 loading="lazy"
                 width="800"
                 height="540"
@@ -266,8 +259,7 @@
             </div>
             <h3>GaussMark</h3>
             <p>
-              Add a short introduction to GaussMark: the problem it explores,
-              your role, and what makes the approach interesting.
+              GaussMark is a browser-based 3D rendering benchmarking tool that allows you to compare the performance of different 3D rendering techniques.
             </p>
             <ul
               class="project-highlights"
@@ -281,12 +273,12 @@
               <summary>Project notes <span aria-hidden="true">+</span></summary>
               <div class="project-details">
                 <p>
-                  Describe the technical foundations and any results you can
-                  share publicly. Keep proprietary implementations in their own
-                  repositories.
+                  GaussMark allows developers to benchmark the performance of different 3D rendering techniques in the browser.
+                  With specific focus on Gaussian splatting, it allows developers to compare the optimization and efficiency of different Gaussian splatting techniques.
+                  GaussMark is built with TypeScript and Rust and currently allows for users to test with PlayCanvas, WebSplatter, Three.js and Spark or their own custom implementations.
                 </p>
                 <p>
-                  Add a repository, live demo, or write-up link when available.
+                  <a href="https://github.com/citizensnipz/GaussMark" target="_blank" rel="noopener noreferrer">GaussMark on GitHub</a>
                 </p>
               </div>
             </details>
@@ -303,24 +295,21 @@
           <span class="section-number">03 / GET IN TOUCH</span
           ><span class="section-rule"></span
           ><span class="small-label"
-            >Good things start with a conversation</span
+            >Hailing frequencies are open</span
           >
         </div>
         <div class="contact-grid">
           <h2 id="contact-title">
-            Let’s build<br /><span>something real.</span>
+            Let’s build<br /><span>something.</span>
           </h2>
           <div class="contact-copy">
             <p>
-              Have an interesting graphics problem,<br />a project idea, or just
+              Have an interesting software problem,<br />a project idea, or just
               want to say hello?
             </p>
-            <a class="text-link" href="mailto:you@example.com"
-              >you@example.com <span aria-hidden="true">↗</span></a
+            <a class="text-link" href="mailto:jkroslowitz@gmail.com"
+              >jkroslowitz@gmail.com <span aria-hidden="true">↗</span></a
             >
-            <p class="editorial-note">
-              Replace with your preferred contact email.
-            </p>
           </div>
         </div>
         <div class="contact-links">
