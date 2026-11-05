@@ -17,7 +17,6 @@ const disposeThemePicker = initializeThemePicker();
 const disposeNavigation = initializeNavigation();
 let graphics: GraphicsEngine | undefined;
 let scroll: ScrollProgress | undefined;
-let paused = false;
 let disposed = false;
 let loadSeconds: number | undefined;
 const params = new URLSearchParams(location.search);
@@ -27,6 +26,7 @@ const compactMode = params.get("quality") === "compact";
 const gpcMode = params.get("scene") === "gpc" || compactMode;
 const mobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const streamedMode = !placeholderMode && !gpcMode && mobileDevice;
+let paused = streamedMode;
 const sceneFormat = placeholderMode ? "placeholder" : gpcMode ? "gpc" : streamedMode ? "rad" : "sog";
 const manifestName = compactMode
   ? "radegast-compact"
@@ -125,6 +125,7 @@ async function startGraphics(): Promise<void> {
     }
     if (disposed) return;
     graphics = new GraphicsEngine(host, layer, updateStatus);
+    graphics.setPaused(paused);
     scroll = new ScrollProgress(
       (progress) => graphics?.setProgress(progress),
     );

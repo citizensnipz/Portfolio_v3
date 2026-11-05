@@ -50,7 +50,7 @@ export class GpcSceneLayer implements SceneLayer {
   private streamed = false;
   private started = false;
   private debugPanel?: HTMLPreElement;
-  private debugUpdated = 0;
+  private debugTimer?: number;
   private frame?: Readonly<TimelineFrame>;
   private masks?: ReturnType<typeof createSpatialMasks>;
   private canvas?: HTMLCanvasElement;
@@ -209,22 +209,29 @@ export class GpcSceneLayer implements SceneLayer {
     );
   }
 
+  private updateDebugPanel = (): void => {
+    if (!this.debugPanel || !this.spark || !this.canvas || document.hidden) return;
+    const pager = this.spark.pager;
+    const chunkResponses = this.streamed
+      ? (performance.getEntriesByType("resource") as PerformanceResourceTiming[])
+          .filter(entry => entry.name.endsWith(".radc") && entry.encodedBodySize > 0)
+      : [];
+    const chunkMiB = chunkResponses.reduce((sum, entry) => sum + entry.encodedBodySize, 0) / 1048576;
+    this.debugPanel.textContent = [
+      "Scene diagnostics v2",
+      `Format: ${this.streamed ? "RAD" : "SOG/GPC"}`,
+      `Active: ${this.spark.activeSplats.toLocaleString()}`,
+      `Target: ${this.spark.lodSplatCount ?? "default"}`,
+      `Resident pages: ${pager?.pageToSplatsChunk.filter(Boolean).length ?? 0}/${pager?.maxPages ?? 0}`,
+      `Chunk responses: ${chunkResponses.length} (${chunkMiB.toFixed(1)} MiB)`,
+      `Fetching/decoding: ${pager?.isFetching() ?? false}`,
+      `Queued uploads: ${pager?.hasQueued() ?? false}`,
+      `Canvas: ${this.canvas.width}x${this.canvas.height}`,
+      `Elapsed: ${Math.round(performance.now() / 1000)}s`,
+    ].join("\n");
+  };
+
   beforeRender(context: GraphicsContext): void {
-    if (this.debugPanel && this.spark && performance.now() - this.debugUpdated > 500) {
-      this.debugUpdated = performance.now();
-      const pager = this.spark.pager;
-      this.debugPanel.textContent = [
-        "Scene diagnostics v1",
-        `Format: ${this.streamed ? "RAD" : "SOG/GPC"}`,
-        `Active: ${this.spark.activeSplats.toLocaleString()}`,
-        `Target: ${this.spark.lodSplatCount ?? "default"}`,
-        `Cache capacity: ${pager?.maxPages ?? 0} pages`,
-        `Fetching/decoding: ${pager?.isFetching() ?? false}`,
-        `Queued uploads: ${pager?.hasQueued() ?? false}`,
-        `Canvas: ${context.renderer.domElement.width}x${context.renderer.domElement.height}`,
-        `Elapsed: ${Math.round(performance.now() / 1000)}s`,
-      ].join("\n");
-    }
     if (!this.started && this.spark && this.spark.activeSplats > 0) {
       this.started = true;
       this.onStarted();
@@ -269,6 +276,8 @@ export class GpcSceneLayer implements SceneLayer {
       this.debugPanel = document.createElement("pre");
       this.debugPanel.style.cssText = "position:fixed;left:8px;top:88px;z-index:10000;background:#000e;color:#fff;padding:12px;font:12px/1.5 monospace;max-width:95vw;pointer-events:none";
       document.body.append(this.debugPanel);
+      this.updateDebugPanel();
+      this.debugTimer = window.setInterval(this.updateDebugPanel, 500);
     }
   }
 
@@ -310,6 +319,7 @@ export class GpcSceneLayer implements SceneLayer {
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
+    window.clearInterval(this.debugTimer);
     this.debugPanel?.remove();
     this.unsubscribeTheme?.();
     this.cancelLoad?.();
